@@ -7,6 +7,7 @@ public class AlgorithmCalculator {
 	static BufferedReader buffer;
 
 	static ArrayList<Stop> stops = new ArrayList<Stop>();
+	static ArrayList<Trip> trips = new ArrayList<Trip>();
 
 	static float[][] pathMatrix;
 
@@ -37,7 +38,7 @@ public class AlgorithmCalculator {
 
 	private static void loadStopTimesFile() {
 		try {
-			reader = new FileReader("transfers.txt");
+			reader = new FileReader("stop_times.txt");
 			buffer = new BufferedReader(reader);
 		} catch (Exception e) {
 			System.out.println("ERROR FILE NAMED transfers.txt NOT FOUND");
