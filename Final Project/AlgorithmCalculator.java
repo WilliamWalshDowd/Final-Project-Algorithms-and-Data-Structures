@@ -13,16 +13,33 @@ public class AlgorithmCalculator {
 
 	AlgorithmCalculator() {
 		loadFiles();
+		populatePathMatrix();
+		runAlgorithOnPathMatrix();
 	}
 
 // ---------------------------------------------------------------------------------//
 // Functions that perform the 3 required tasks
 // ---------------------------------------------------------------------------------//
 	public static void fastestRouteBetween(int stopID1, int stopID2) {
-		// TODO write function
+		float shortestPath = pathMatrix[stopID1][stopID2];
+		
+		System.out.println("Cost from stop" + stopID1 + " to " + stopID2 + "is" + shortestPath);
 	}
 
 	public static void searchForStopByName(String name) {
+		ArrayList<Stop> tripsMatchingSearch = new ArrayList<Stop>();
+		
+		// currently brute force version TODO make using ternary tree
+		for (int i = 0; i < stops.size(); i++) {
+			if (stops.get(i).stop_name.contains(name)) {
+				tripsMatchingSearch.add(stops.get(i));
+			}
+		}
+		
+		for (int i = 0; i < tripsMatchingSearch.size(); i++) {
+			Stop stop = tripsMatchingSearch.get(i);
+			stop.printInfo();
+		}
 
 	}
 
@@ -175,6 +192,35 @@ public class AlgorithmCalculator {
 
 		}
 
+	}
+	
+// --------------------------------------------------------------------------------------------------------------------------------//
+// Functions to update the data loaded from the files so that it can be used in the required functions..
+// --------------------------------------------------------------------------------------------------------------------------------//
+	// ----------------------------------------------------------------------------------------------------------------------------//
+	// runs an algorithm to find the fastest routes for every possible path and then updates the path matrix with that info.
+	// ----------------------------------------------------------------------------------------------------------------------------//
+	private static void runAlgorithOnPathMatrix() {
+		for (int i = 0; i < stops.size(); i++) {
+			for (int j = 0; j < stops.size(); j++) {
+				for (int k = 0; k < stops.size(); k++) {
+					if (pathMatrix[i][k] + pathMatrix[k][j] < pathMatrix[i][j]) {
+						pathMatrix[i][j] = pathMatrix[i][k] + pathMatrix[k][j];
+					}
+				}
+			}
+		}
+	}
+	
+	
+	private static void populatePathMatrix() {
+		pathMatrix = new float[stops.size()][stops.size()];
+		
+		for (int i = 0; i < stops.size(); i++) {
+			for (int j = 0; j < stops.size(); j++) {
+				pathMatrix[i][j] = 999999999;
+			}
+		}
 	}
 
 }
