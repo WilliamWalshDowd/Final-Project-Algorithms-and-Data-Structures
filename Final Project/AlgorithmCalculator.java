@@ -13,7 +13,6 @@ public class AlgorithmCalculator {
 
 	AlgorithmCalculator() {
 		loadFiles();
-		populatePathMatrix();
 		runAlgorithOnPathMatrix();
 	}
 
@@ -22,25 +21,25 @@ public class AlgorithmCalculator {
 // ---------------------------------------------------------------------------------//
 	public void fastestRouteBetween(int stopID1, int stopID2) {
 		float shortestPath = pathMatrix[stopID1][stopID2];
-		
+
 		System.out.println("Cost from stop" + stopID1 + " to " + stopID2 + "is" + shortestPath);
 	}
 
 	public boolean searchForStopByName(String name) {
 		ArrayList<Stop> tripsMatchingSearch = new ArrayList<Stop>();
-		
+
 		// currently brute force version TODO make using ternary tree
 		for (int i = 0; i < stops.size(); i++) {
 			if (stops.get(i).stop_name.contains(name)) {
 				tripsMatchingSearch.add(stops.get(i));
 			}
 		}
-		
+
 		for (int i = 0; i < tripsMatchingSearch.size(); i++) {
 			Stop stop = tripsMatchingSearch.get(i);
 			stop.printInfo();
 		}
-		
+
 		if (tripsMatchingSearch.size() > 0) {
 			return true;
 		} else {
@@ -66,10 +65,11 @@ public class AlgorithmCalculator {
 			System.out.println("Trip ID: " + trip.tripID);
 			for (int j = 0; j < trip.nodes.size(); j++) {
 				tripNode tripnode = trip.nodes.get(j);
-				System.out.println(j+1 + " Step in trip, " + "Arrival Time: " + tripnode.arrivalTime + ", Departure Time: " + tripnode.departureTime);
+				System.out.println(j + 1 + " Step in trip, " + "Arrival Time: " + tripnode.arrivalTime
+						+ ", Departure Time: " + tripnode.departureTime);
 			}
 		}
-		
+
 		if (tripsMatchingSearch.size() > 0) {
 			return true;
 		} else {
@@ -83,6 +83,7 @@ public class AlgorithmCalculator {
 // ---------------------------------------------------------------------------------//
 	private static void loadFiles() {
 		loadStopsFile();
+		populatePathMatrix();
 		loadTransfersFile();
 		loadStopTimesFile();
 	}
@@ -95,6 +96,7 @@ public class AlgorithmCalculator {
 		try {
 			reader = new FileReader("stop_times.txt");
 			buffer = new BufferedReader(reader);
+			String labels = buffer.readLine();
 		} catch (Exception e) {
 			System.out.println("ERROR FILE NAMED transfers.txt NOT FOUND");
 		}
@@ -104,6 +106,10 @@ public class AlgorithmCalculator {
 			try {
 				currentLine = buffer.readLine();
 			} catch (Exception e) {
+				break;
+			}
+			
+			if (currentLine == "") {
 				break;
 			}
 
@@ -152,6 +158,7 @@ public class AlgorithmCalculator {
 		try {
 			reader = new FileReader("stops.txt");
 			buffer = new BufferedReader(reader);
+			String labels = buffer.readLine();
 		} catch (Exception e) {
 			System.out.println("ERROR FILE NAMED stops.txt NOT FOUND");
 		}
@@ -163,13 +170,35 @@ public class AlgorithmCalculator {
 			} catch (Exception e) {
 				break;
 			}
+			
+			if (currentLine == "") {
+				break;
+			}
 
-			String[] slitCurrentLine = currentLine.split(",");
-			stops.add(new Stop(Integer.parseInt(slitCurrentLine[0]), Integer.parseInt(slitCurrentLine[1]),
-					slitCurrentLine[2], slitCurrentLine[3], Float.parseFloat(slitCurrentLine[4]),
-					Float.parseFloat(slitCurrentLine[5]), slitCurrentLine[6], slitCurrentLine[7], slitCurrentLine[8],
-					slitCurrentLine[9]));
-			System.out.println("ID: " + Integer.parseInt(slitCurrentLine[0]) + " : Stop added to list");
+			String[] splitCurrentLine = { "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", };
+			String[] splitCurrentLineValue = currentLine.split(",");
+			
+			for (int i = 0; i < splitCurrentLineValue.length; i++) {
+				splitCurrentLine[i] = splitCurrentLineValue[i];
+				try {
+					if (i == 0 || i == 1) {
+					Integer.parseInt(splitCurrentLine[i]);
+					}
+				} catch(Exception e) {
+					splitCurrentLine[i] = "-1";
+				}
+			}
+
+			System.out.println(splitCurrentLine[0] + "," + splitCurrentLine[1] + "," + splitCurrentLine[2] + ","
+					+ splitCurrentLine[3] + "," + splitCurrentLine[4] + "," + splitCurrentLine[5] + ","
+					+ splitCurrentLine[6] + "," + splitCurrentLine[7] + "," + splitCurrentLine[8] + ","
+					+ splitCurrentLine[9]);
+
+			stops.add(new Stop(Integer.parseInt(splitCurrentLine[0]), Integer.parseInt(splitCurrentLine[1]),
+					splitCurrentLine[2], splitCurrentLine[3], Float.parseFloat(splitCurrentLine[4]),
+					Float.parseFloat(splitCurrentLine[5]), splitCurrentLine[6], splitCurrentLine[7],
+					splitCurrentLine[8], splitCurrentLine[9]));
+			System.out.println("ID: " + Integer.parseInt(splitCurrentLine[0]) + " : Stop added to list");
 		}
 
 		System.out.println("All stops added");
@@ -182,10 +211,11 @@ public class AlgorithmCalculator {
 		try {
 			reader = new FileReader("transfers.txt");
 			buffer = new BufferedReader(reader);
+			String labels = buffer.readLine();
 		} catch (Exception e) {
 			System.out.println("ERROR FILE NAMED transfers.txt NOT FOUND");
 		}
-
+		
 		while (true) {
 			String currentLine;
 			try {
@@ -193,24 +223,33 @@ public class AlgorithmCalculator {
 			} catch (Exception e) {
 				break;
 			}
+			
+			if (currentLine == "") {
+				break;
+			}
 
-			String[] slitCurrentLine = currentLine.split(",");
-			if (Integer.parseInt(slitCurrentLine[2]) == 0) {
-				pathMatrix[Integer.parseInt(slitCurrentLine[0])][Integer.parseInt(slitCurrentLine[1])] = 2;
-			} else if (Integer.parseInt(slitCurrentLine[0]) == 2) {
-				pathMatrix[Integer.parseInt(slitCurrentLine[0])][Integer.parseInt(slitCurrentLine[1])] = Integer
-						.parseInt(slitCurrentLine[3]) / 100;
+			String[] splitCurrentLine = { "-1", "-1", "-1", "-1" };
+			String[] splitCurrentLineValue = currentLine.split(",");
+			for (int i = 0; i < splitCurrentLineValue.length; i++) {
+				splitCurrentLine[i] = splitCurrentLineValue[i];
+			}
+			if (Integer.parseInt(splitCurrentLine[2]) == 0) {
+				pathMatrix[Integer.parseInt(splitCurrentLine[0])][Integer.parseInt(splitCurrentLine[1])] = 2;
+			} else if (Integer.parseInt(splitCurrentLine[0]) == 2) {
+				pathMatrix[Integer.parseInt(splitCurrentLine[0])][Integer.parseInt(splitCurrentLine[1])] = Integer
+						.parseInt(splitCurrentLine[3]) / 100;
 			}
 
 		}
 
 	}
-	
+
 // --------------------------------------------------------------------------------------------------------------------------------//
 // Functions to update the data loaded from the files so that it can be used in the required functions..
 // --------------------------------------------------------------------------------------------------------------------------------//
 	// ----------------------------------------------------------------------------------------------------------------------------//
-	// runs an algorithm to find the fastest routes for every possible path and then updates the path matrix with that info.
+	// runs an algorithm to find the fastest routes for every possible path and then
+	// updates the path matrix with that info.
 	// ----------------------------------------------------------------------------------------------------------------------------//
 	private static void runAlgorithOnPathMatrix() {
 		for (int i = 0; i < stops.size(); i++) {
@@ -223,11 +262,10 @@ public class AlgorithmCalculator {
 			}
 		}
 	}
-	
-	
+
 	private static void populatePathMatrix() {
 		pathMatrix = new float[stops.size()][stops.size()];
-		
+
 		for (int i = 0; i < stops.size(); i++) {
 			for (int j = 0; j < stops.size(); j++) {
 				pathMatrix[i][j] = 999999999;
