@@ -20,13 +20,13 @@ public class AlgorithmCalculator {
 // ---------------------------------------------------------------------------------//
 // Functions that perform the 3 required tasks
 // ---------------------------------------------------------------------------------//
-	public static void fastestRouteBetween(int stopID1, int stopID2) {
+	public void fastestRouteBetween(int stopID1, int stopID2) {
 		float shortestPath = pathMatrix[stopID1][stopID2];
 		
 		System.out.println("Cost from stop" + stopID1 + " to " + stopID2 + "is" + shortestPath);
 	}
 
-	public static void searchForStopByName(String name) {
+	public boolean searchForStopByName(String name) {
 		ArrayList<Stop> tripsMatchingSearch = new ArrayList<Stop>();
 		
 		// currently brute force version TODO make using ternary tree
@@ -40,10 +40,16 @@ public class AlgorithmCalculator {
 			Stop stop = tripsMatchingSearch.get(i);
 			stop.printInfo();
 		}
+		
+		if (tripsMatchingSearch.size() > 0) {
+			return true;
+		} else {
+			return false;
+		}
 
 	}
 
-	public static void searchForTripByTime(String time) {
+	public void searchForTripByTime(String time) {
 		ArrayList<Trip> tripsMatchingSearch = new ArrayList<Trip>();
 
 		for (int i = 0; i < trips.size(); i++) {
