@@ -14,9 +14,10 @@ public class FinalProject {
 			printOutOptionList();
 			userInput = scanner.next();
 
-			while (userInput != "1" && userInput != "2" && userInput != "3") {
+			while (userInput != "1" || userInput != "2" || userInput != "3") {
 				System.out.println(
 						"You typed an input that wasn't recognised, please type 1 2 or 3 based on the above list.");
+				System.out.print("> ");
 				userInput = scanner.next();
 			}
 
@@ -36,7 +37,7 @@ public class FinalProject {
 		System.out.println("|          Type 3 if you want to find a trip by its arrival time         |");
 		System.out.println("|                                                                        |");
 		System.out.println("--------------------------------------------------------------------------");
-		System.out.println("> ");
+		System.out.print("> ");
 	}
 
 	private static void asnwerInput(String input, Scanner scanner) {
@@ -54,13 +55,13 @@ public class FinalProject {
 
 		System.out.println("You have chosen, find a stop by its name.");
 		System.out.println("Please type the name of the stop or parts of the stop's name");
-		System.out.println("> ");
+		System.out.print("> ");
 
 		userInput = scanner.next();
 		while (userInput == null || userInput == "INVALID" || userInput == ""
 				|| !calculator.searchForStopByName(userInput)) {
 			System.out.println("Invalid input or no stops found, please type a name or part of a name.");
-			System.out.println("> ");
+			System.out.print("> ");
 			userInput = scanner.next();
 		}
 
@@ -72,7 +73,7 @@ public class FinalProject {
 		System.out.println("You have chosen, find the shorest path between 2 stops.");
 		System.out.println("Please type your desired Starting stop and Ending stop in the form: ");
 		System.out.println("               start stop ID/end stop ID");
-		System.out.println("> ");
+		System.out.print("> ");
 
 		userInput = scanner.next();
 		int[] stops = new int[2];
@@ -86,7 +87,7 @@ public class FinalProject {
 		while (userInput == null || userInput == "INVALID") {
 			System.out.println("Invalid input, please follow the format: ");
 			System.out.println("           start stop/end stop");
-			System.out.println("> ");
+			System.out.print("> ");
 			userInput = scanner.next();
 			try {
 				String[] userInputSplit = userInput.split("/");
@@ -106,13 +107,14 @@ public class FinalProject {
 		System.out.println("You have chosen, find a trip by its arrival time.");
 		System.out.println("Please type the arrival time in the form:");
 		System.out.println("                hh:DD:MM");
-		System.out.println("> ");
+		System.out.print("> ");
 
 		userInput = scanner.next();
 		while (userInput == null || userInput == "INVALID" || userInput == ""
-				|| !calculator.searchForStopByName(userInput)) {
-			System.out.println("Invalid input or no stops found, please type a name or part of a name.");
-			System.out.println("> ");
+				|| !calculator.searchForTripByTime(userInput)) {
+			System.out.println("Invalid input or no trips found, please type a time in the format:");
+			System.out.println("                          hh:DD:MM");
+			System.out.print("> ");
 			userInput = scanner.next();
 		}
 	}

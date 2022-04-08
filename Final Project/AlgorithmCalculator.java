@@ -49,7 +49,7 @@ public class AlgorithmCalculator {
 
 	}
 
-	public void searchForTripByTime(String time) {
+	public boolean searchForTripByTime(String time) {
 		ArrayList<Trip> tripsMatchingSearch = new ArrayList<Trip>();
 
 		for (int i = 0; i < trips.size(); i++) {
@@ -68,6 +68,12 @@ public class AlgorithmCalculator {
 				tripNode tripnode = trip.nodes.get(j);
 				System.out.println(j+1 + " Step in trip, " + "Arrival Time: " + tripnode.arrivalTime + ", Departure Time: " + tripnode.departureTime);
 			}
+		}
+		
+		if (tripsMatchingSearch.size() > 0) {
+			return true;
+		} else {
+			return false;
 		}
 
 	}
