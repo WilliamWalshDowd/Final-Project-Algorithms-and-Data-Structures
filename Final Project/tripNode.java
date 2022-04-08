@@ -7,9 +7,9 @@ public class tripNode {
 	int stopHeadsign; 
 	int pickupType; 
 	int dropOffType; 
-	float distanceForThisNode;
+	float distanceTraveled;
 	
-	tripNode(String arrivalTime, String departureTime, int stopID, int stopSequence, int stopHeadsign, int pickupType, int dropOffType, float distanceForThisNode) {
+	tripNode(String arrivalTime, String departureTime, int stopID, int stopSequence, int stopHeadsign, int pickupType, int dropOffType, float distanceTraveled) {
 		this.arrivalTime = arrivalTime;
 		this.departureTime = departureTime;
 		this.stopID = stopID;
@@ -17,7 +17,7 @@ public class tripNode {
 		this.stopHeadsign = stopHeadsign;
 		this.pickupType = pickupType;
 		this.dropOffType = dropOffType;
-		this.distanceForThisNode = distanceForThisNode;
+		this.distanceTraveled = distanceTraveled;
 	}
 
 }

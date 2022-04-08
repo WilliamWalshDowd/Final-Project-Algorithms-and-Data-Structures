@@ -1,10 +1,11 @@
+import java.util.ArrayList;
 
 public class Trip {
 	int tripID;
-	tripNode[] nodes;
+	ArrayList<tripNode> nodes;
 	
-	Trip(int tripID, tripNode[] nodes) {
+	Trip(int tripID) {
 		this.tripID = tripID;
-		this.nodes = nodes;
+		this.nodes = new ArrayList<tripNode>();
 	}
 }
