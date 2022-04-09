@@ -10,11 +10,11 @@ public class FinalProject {
 		boolean exit = false;
 		String userInput;
 
-		while (!exit) {
+		while (exit == false) {
 			printOutOptionList();
 			userInput = scanner.next();
 
-			while (userInput != "1" || userInput != "2" || userInput != "3") {
+			while (!userInput.contains("1") && !userInput.contains("2") && !userInput.contains("3")) {
 				System.out.println(
 						"You typed an input that wasn't recognised, please type 1 2 or 3 based on the above list.");
 				System.out.print("> ");
@@ -41,9 +41,9 @@ public class FinalProject {
 	}
 
 	private static void asnwerInput(String input, Scanner scanner) {
-		if (input == "1") {
+		if (input.contains("1")) {
 			runShortestPathInput(scanner);
-		} else if (input == "2") {
+		} else if (input.contains("2")) {
 			runStopByNameInput(scanner);
 		} else {
 			runTripByArrivalTimeInput(scanner);

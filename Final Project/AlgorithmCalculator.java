@@ -12,7 +12,9 @@ public class AlgorithmCalculator {
 	static float[][] pathMatrix;
 
 	AlgorithmCalculator() {
+		System.out.println("Loading files...");
 		loadFiles();
+		System.out.println("All files loaded!");
 		runAlgorithOnPathMatrix();
 	}
 
@@ -108,20 +110,39 @@ public class AlgorithmCalculator {
 			} catch (Exception e) {
 				break;
 			}
-			
-			if (currentLine == "") {
+
+			if (currentLine == null) {
 				break;
 			}
 
-			String[] slitCurrentLine = currentLine.split(",");
+			String[] splitCurrentLine = { "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1" };
+			String[] splitCurrentLineValue = currentLine.split(",");
+
+			for (int i = 0; i < splitCurrentLineValue.length; i++) {
+				splitCurrentLine[i] = splitCurrentLineValue[i];
+				try {
+					if (i == 3 || i == 4 || i == 5 || i == 6 || i == 7) {
+						Integer.parseInt(splitCurrentLine[i]);
+					} else if (i == 8) {
+						Float.parseFloat(splitCurrentLine[i]);
+					}
+				} catch (Exception e) {
+					splitCurrentLine[i] = "-1";
+				}
+			}
 
 			// makes the trips and nodes so they can be access much easier later.
 			//
-			if (trips.get(trips.size() - 1).tripID != Integer.parseInt(slitCurrentLine[0])) {
-				trips.add(new Trip(Integer.parseInt(slitCurrentLine[0])));
+			if (trips.size() - 1 <= 0) {
+				trips.add(new Trip(Integer.parseInt(splitCurrentLine[0])));
+			} else if (trips.get(trips.size() - 1).tripID != Integer.parseInt(splitCurrentLine[0])) {
+				trips.add(new Trip(Integer.parseInt(splitCurrentLine[0])));
 			}
-			String[] splitArrivalTime = slitCurrentLine[1].split(":");
-			String[] splitDepartureTime = slitCurrentLine[1].split(":");
+
+			String[] splitArrivalTime = splitCurrentLine[1].split(":");
+			String[] splitDepartureTime = splitCurrentLine[2].split(":");
+			splitArrivalTime[0] = splitArrivalTime[0].substring(1);
+			splitDepartureTime[0] = splitDepartureTime[0].substring(1);
 			if (Integer.parseInt(splitArrivalTime[0]) < 24 && Integer.parseInt(splitArrivalTime[0]) >= 0
 					&& Integer.parseInt(splitArrivalTime[1]) <= 59 && Integer.parseInt(splitArrivalTime[1]) >= 0
 					&& Integer.parseInt(splitArrivalTime[2]) <= 59 && Integer.parseInt(splitArrivalTime[2]) >= 0) {
@@ -129,10 +150,10 @@ public class AlgorithmCalculator {
 						&& Integer.parseInt(splitDepartureTime[1]) <= 59 && Integer.parseInt(splitDepartureTime[1]) >= 0
 						&& Integer.parseInt(splitDepartureTime[2]) <= 59
 						&& Integer.parseInt(splitDepartureTime[2]) >= 0) {
-					trips.get(trips.size() - 1).nodes.add(new tripNode(slitCurrentLine[1], slitCurrentLine[2],
-							Integer.parseInt(slitCurrentLine[3]), Integer.parseInt(slitCurrentLine[4]),
-							Integer.parseInt(slitCurrentLine[5]), Integer.parseInt(slitCurrentLine[6]),
-							Integer.parseInt(slitCurrentLine[7]), Float.parseFloat(slitCurrentLine[8])));
+					trips.get(trips.size() - 1).nodes.add(new tripNode(splitCurrentLine[1], splitCurrentLine[2],
+							Integer.parseInt(splitCurrentLine[3]), Integer.parseInt(splitCurrentLine[4]),
+							Integer.parseInt(splitCurrentLine[5]), Integer.parseInt(splitCurrentLine[6]),
+							Integer.parseInt(splitCurrentLine[7]), Float.parseFloat(splitCurrentLine[8])));
 				}
 			}
 
@@ -141,14 +162,15 @@ public class AlgorithmCalculator {
 			int previousStop = -1;
 			int tripID = -1;
 
-			if (tripID == Integer.parseInt(slitCurrentLine[0])) {
-				pathMatrix[previousStop][Integer.parseInt(slitCurrentLine[3])] = 1;
+			if (tripID == Integer.parseInt(splitCurrentLine[0])) {
+				pathMatrix[previousStop][Integer.parseInt(splitCurrentLine[3])] = 1;
 			}
 
-			previousStop = Integer.parseInt(slitCurrentLine[3]);
-			tripID = Integer.parseInt(slitCurrentLine[0]);
+			previousStop = Integer.parseInt(splitCurrentLine[3]);
+			tripID = Integer.parseInt(splitCurrentLine[0]);
 
 		}
+		System.out.println("All stop files added (3/3)");
 	}
 
 	// ---------------------------------------------------------------------------------//
@@ -170,38 +192,32 @@ public class AlgorithmCalculator {
 			} catch (Exception e) {
 				break;
 			}
-			
-			if (currentLine == "") {
+
+			if (currentLine == null) {
 				break;
 			}
 
 			String[] splitCurrentLine = { "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", };
 			String[] splitCurrentLineValue = currentLine.split(",");
-			
+
 			for (int i = 0; i < splitCurrentLineValue.length; i++) {
 				splitCurrentLine[i] = splitCurrentLineValue[i];
 				try {
 					if (i == 0 || i == 1) {
-					Integer.parseInt(splitCurrentLine[i]);
+						Integer.parseInt(splitCurrentLine[i]);
 					}
-				} catch(Exception e) {
+				} catch (Exception e) {
 					splitCurrentLine[i] = "-1";
 				}
 			}
-
-			System.out.println(splitCurrentLine[0] + "," + splitCurrentLine[1] + "," + splitCurrentLine[2] + ","
-					+ splitCurrentLine[3] + "," + splitCurrentLine[4] + "," + splitCurrentLine[5] + ","
-					+ splitCurrentLine[6] + "," + splitCurrentLine[7] + "," + splitCurrentLine[8] + ","
-					+ splitCurrentLine[9]);
 
 			stops.add(new Stop(Integer.parseInt(splitCurrentLine[0]), Integer.parseInt(splitCurrentLine[1]),
 					splitCurrentLine[2], splitCurrentLine[3], Float.parseFloat(splitCurrentLine[4]),
 					Float.parseFloat(splitCurrentLine[5]), splitCurrentLine[6], splitCurrentLine[7],
 					splitCurrentLine[8], splitCurrentLine[9]));
-			System.out.println("ID: " + Integer.parseInt(splitCurrentLine[0]) + " : Stop added to list");
 		}
 
-		System.out.println("All stops added");
+		System.out.println("All stops added (1/3)");
 	}
 
 	// ---------------------------------------------------------------------------------//
@@ -215,7 +231,7 @@ public class AlgorithmCalculator {
 		} catch (Exception e) {
 			System.out.println("ERROR FILE NAMED transfers.txt NOT FOUND");
 		}
-		
+
 		while (true) {
 			String currentLine;
 			try {
@@ -223,8 +239,8 @@ public class AlgorithmCalculator {
 			} catch (Exception e) {
 				break;
 			}
-			
-			if (currentLine == "") {
+
+			if (currentLine == null) {
 				break;
 			}
 
@@ -238,10 +254,11 @@ public class AlgorithmCalculator {
 			} else if (Integer.parseInt(splitCurrentLine[0]) == 2) {
 				pathMatrix[Integer.parseInt(splitCurrentLine[0])][Integer.parseInt(splitCurrentLine[1])] = Integer
 						.parseInt(splitCurrentLine[3]) / 100;
+
 			}
 
 		}
-
+		System.out.println("All transfers added (2/3)");
 	}
 
 // --------------------------------------------------------------------------------------------------------------------------------//
@@ -264,7 +281,7 @@ public class AlgorithmCalculator {
 	}
 
 	private static void populatePathMatrix() {
-		pathMatrix = new float[stops.size()][stops.size()];
+		pathMatrix = new float[12394][12394];
 
 		for (int i = 0; i < stops.size(); i++) {
 			for (int j = 0; j < stops.size(); j++) {
