@@ -22,7 +22,7 @@ public class tripNode {
 	}
 
 	public void printInfo() {
-		System.out.println("Arrival Time: " + arrivalTime + ", Departure Time: " + departureTime + ", StopID: "
+		System.out.println(" Arrival Time: " + arrivalTime + ", Departure Time: " + departureTime + ", StopID: "
 				+ stopID + ", stop sequence: " + stopSequence + ", stop headsign: " + stopHeadsign + ", pickup type: "
 				+ pickupType + ", dropOff type: " + dropOffType + ", Distance traveled: " + distanceTraveled);
 	}

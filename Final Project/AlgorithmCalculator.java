@@ -22,12 +22,20 @@ public class AlgorithmCalculator {
 // Functions that perform the 3 required tasks
 // ---------------------------------------------------------------------------------//
 	public boolean fastestRouteBetween(int stopID1, int stopID2) {
-		runAlgorithOnPathMatrix(stopID1, stopID2);
-		float shortestPath = pathMatrix[stopID1][stopID2];
+		runAlgorithOnPathMatrix(stopID1);
+		float shortestPath;
+
+		if (pathMatrixFromStopID(stopID1) == -1 || pathMatrixFromStopID(stopID2) == -1) {
+			System.out.println(
+					"There was a problem finding the fastest route, the IDs given dont have an associated stop.");
+			return false;
+		}
+
+		shortestPath = pathMatrix[pathMatrixFromStopID(stopID1)][pathMatrixFromStopID(stopID2)];
 
 		if (shortestPath >= 999999999) {
-			System.out.println(
-					"There was a problem finding the fastest route, either the stop IDs dont exist or there isn't a route between the 2 stops");
+			System.out
+					.println("There was a problem finding the fastest route, there isn't a route between the 2 stops.");
 			return false;
 		} else {
 			System.out.println("Cost from stop " + stopID1 + " to " + stopID2 + " is " + shortestPath);
@@ -41,7 +49,7 @@ public class AlgorithmCalculator {
 
 		// currently brute force version TODO make using ternary tree
 		for (int i = 0; i < stops.size(); i++) {
-			if (stops.get(i).stop_name.contains(name)) {
+			if (stops.get(i).stop_name.toLowerCase().contains(name.toLowerCase())) {
 				stopsMatchingSearch.add(stops.get(i));
 			}
 		}
@@ -77,7 +85,7 @@ public class AlgorithmCalculator {
 			System.out.println("-------------------Trip ID: " + trip.tripID + "-------------------");
 			for (int j = 0; j < trip.nodes.size(); j++) {
 				tripNode tripnode = trip.nodes.get(j);
-				System.out.print("		step in trip = " + (j+1));
+				System.out.print("		step in trip = " + (j + 1));
 				tripnode.printInfo();
 			}
 		}
@@ -174,7 +182,8 @@ public class AlgorithmCalculator {
 			int tripID = -1;
 
 			if (tripID == Integer.parseInt(splitCurrentLine[0])) {
-				pathMatrix[previousStop][Integer.parseInt(splitCurrentLine[3])] = 1;
+				pathMatrix[pathMatrixFromStopID(previousStop)][pathMatrixFromStopID(
+						Integer.parseInt(splitCurrentLine[3]))] = 1;
 			}
 
 			previousStop = Integer.parseInt(splitCurrentLine[3]);
@@ -225,7 +234,7 @@ public class AlgorithmCalculator {
 			stops.add(new Stop(Integer.parseInt(splitCurrentLine[0]), Integer.parseInt(splitCurrentLine[1]),
 					splitCurrentLine[2], splitCurrentLine[3], Float.parseFloat(splitCurrentLine[4]),
 					Float.parseFloat(splitCurrentLine[5]), splitCurrentLine[6], splitCurrentLine[7],
-					splitCurrentLine[8], splitCurrentLine[9]));
+					splitCurrentLine[8], splitCurrentLine[9], stops.size()));
 		}
 
 		System.out.println("All stops added (1/3)");
@@ -261,15 +270,25 @@ public class AlgorithmCalculator {
 				splitCurrentLine[i] = splitCurrentLineValue[i];
 			}
 			if (Integer.parseInt(splitCurrentLine[2]) == 0) {
-				pathMatrix[Integer.parseInt(splitCurrentLine[0])][Integer.parseInt(splitCurrentLine[1])] = 2;
-			} else if (Integer.parseInt(splitCurrentLine[0]) == 2) {
-				pathMatrix[Integer.parseInt(splitCurrentLine[0])][Integer.parseInt(splitCurrentLine[1])] = Integer
-						.parseInt(splitCurrentLine[3]) / 100;
+				pathMatrix[pathMatrixFromStopID(Integer.parseInt(splitCurrentLine[0]))][pathMatrixFromStopID(
+						Integer.parseInt(splitCurrentLine[1]))] = 2;
+			} else if (Integer.parseInt(splitCurrentLine[2]) == 2) {
+				pathMatrix[pathMatrixFromStopID(Integer.parseInt(splitCurrentLine[0]))][pathMatrixFromStopID(
+						Integer.parseInt(splitCurrentLine[1]))] = Integer.parseInt(splitCurrentLine[3]) / 100;
 
 			}
 
 		}
 		System.out.println("All transfers added (2/3)");
+	}
+
+	private static int pathMatrixFromStopID(int stopID) {
+		for (int i = 0; i < stops.size(); i++) {
+			if (stops.get(i).stop_id == stopID) {
+				return stops.get(i).pathMatrixIndex;
+			}
+		}
+		return -1;
 	}
 
 // --------------------------------------------------------------------------------------------------------------------------------//
@@ -279,18 +298,45 @@ public class AlgorithmCalculator {
 	// runs an algorithm to find the fastest routes for every possible path and then
 	// updates the path matrix with that info.
 	// ----------------------------------------------------------------------------------------------------------------------------//
-	private static void runAlgorithOnPathMatrix(int nodeID1, int nodeID2) {
-		int i = nodeID1;
-		int j = nodeID2;
-		for (int k = 0; k < stops.size(); k++) {
-			if (pathMatrix[i][k] + pathMatrix[k][j] < pathMatrix[i][j]) {
-				pathMatrix[i][j] = pathMatrix[i][k] + pathMatrix[k][j];
+	private static void runAlgorithOnPathMatrix(int startNode) {
+		dijkstra(startNode);
+	}
+
+	static float minDistance(float distanceMatrix[], Boolean sptSet[]) {
+		float min = 999999999, minIndex = -1;
+		for (int v = 0; v < pathMatrix.length; v++)
+			if (sptSet[v] == false && distanceMatrix[v] <= min) {
+				min = distanceMatrix[v];
+				minIndex = v;
 			}
+		return minIndex;
+	}
+
+	static void dijkstra(int src) {
+		float dist[] = new float[pathMatrix.length];
+
+		Boolean sptSet[] = new Boolean[pathMatrix.length];
+
+		for (int i = 0; i < pathMatrix.length; i++) {
+			dist[i] = 999999999;
+			sptSet[i] = false;
 		}
+
+		dist[src] = 0;
+
+		for (int count = 0; count < pathMatrix.length - 1; count++) {
+			int u = (int) (minDistance(dist, sptSet));
+			sptSet[u] = true;
+			for (int v = 0; v < pathMatrix.length; v++)
+				if (!sptSet[v] && pathMatrix[u][v] != 0 && dist[u] != 999999999 && dist[u] + pathMatrix[u][v] < dist[v])
+					dist[v] = dist[u] + pathMatrix[u][v];
+		}
+
+		pathMatrix[src] = dist;
 	}
 
 	private static void populatePathMatrix() {
-		pathMatrix = new float[12394][12394];
+		pathMatrix = new float[stops.size()][stops.size()];
 
 		for (int i = 0; i < stops.size(); i++) {
 			for (int j = 0; j < stops.size(); j++) {

@@ -9,8 +9,7 @@ public class FinalProject {
 		calculator = new AlgorithmCalculator();
 		boolean exit = false;
 		String userInput;
-		System.out.println("got here");
-
+		
 		while (exit == false) {
 			printOutOptionList();
 			userInput = scanner.next();
@@ -57,10 +56,10 @@ public class FinalProject {
 		System.out.println("You have chosen, find a stop by its name.");
 		System.out.println("Please type the name of the stop or parts of the stop's name");
 		System.out.print("> ");
-		
+
 		userInput = scanner.next();
 		userInput += scanner.nextLine();
-		
+
 		while (userInput == null || userInput == "INVALID" || userInput == ""
 				|| !calculator.searchForStopByName(userInput)) {
 			System.out.println("Invalid input or no stops found, please type a name or part of a name.");
@@ -80,7 +79,7 @@ public class FinalProject {
 		System.out.print("> ");
 
 		userInput = scanner.next();
-		userInput += scanner.nextLine();
+		// userInput += scanner.nextLine();
 		int[] stops = new int[2];
 		try {
 			String[] userInputSplit = userInput.split("/");
@@ -89,12 +88,24 @@ public class FinalProject {
 		} catch (Exception e) {
 			userInput = "INVALID";
 		}
-		while (userInput == null || userInput == "INVALID" && !calculator.fastestRouteBetween(stops[0], stops[1])) {
-			System.out.println("Invalid input, please follow the format: ");
-			System.out.println("           start stop/end stop");
+		while (userInput.equals("INVALID") || !calculator.fastestRouteBetween(stops[0], stops[1])) {
+			if (userInput.equals("INVALID")) {
+				System.out.println("Invalid input, please follow the format: ");
+				System.out.println("           start stop/end stop");
+			} else {
+				System.out.println("try again and follow the format: ");
+				System.out.println("       start stop/end stop");
+			}
 			System.out.print("> ");
 			userInput = scanner.next();
 			userInput += scanner.nextLine();
+			try {
+				String[] userInputSplit = userInput.split("/");
+				stops[0] = Integer.parseInt(userInputSplit[0]);
+				stops[1] = Integer.parseInt(userInputSplit[1]);
+			} catch (Exception e) {
+				userInput = "INVALID";
+			}
 		}
 	}
 
@@ -103,7 +114,7 @@ public class FinalProject {
 
 		System.out.println("You have chosen, find a trip by its arrival time.");
 		System.out.println("Please type the arrival time in the form:");
-		System.out.println("                hh:DD:MM");
+		System.out.println("                hh:mm:ss");
 		System.out.print("> ");
 
 		userInput = scanner.next();
