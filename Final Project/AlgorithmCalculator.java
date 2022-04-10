@@ -124,6 +124,9 @@ public class AlgorithmCalculator {
 		} catch (Exception e) {
 			System.out.println("ERROR FILE NAMED transfers.txt NOT FOUND");
 		}
+		
+		int previousStop = -1;
+		int tripID = -1;
 
 		while (true) {
 			String currentLine;
@@ -155,10 +158,11 @@ public class AlgorithmCalculator {
 
 			// makes the trips and nodes so they can be access much easier later.
 			//
-			if (trips.size() - 1 <= 0) {
-				trips.add(new Trip(Integer.parseInt(splitCurrentLine[0])));
-			} else if (trips.get(trips.size() - 1).tripID != Integer.parseInt(splitCurrentLine[0])) {
-				trips.add(new Trip(Integer.parseInt(splitCurrentLine[0])));
+			int currentTripID = Integer.parseInt(splitCurrentLine[0]);
+			if (trips.size() == 0) {
+				trips.add(new Trip(currentTripID));
+			} else if (trips.get(trips.size() - 1).tripID != currentTripID) {
+				trips.add(new Trip(currentTripID));
 			}
 
 			String[] splitArrivalTime = splitCurrentLine[1].split(":");
@@ -182,16 +186,14 @@ public class AlgorithmCalculator {
 
 			// adds more data to the path matrix for finding the optimal path between stops
 			//
-			int previousStop = -1;
-			int tripID = -1;
 
-			if (tripID == Integer.parseInt(splitCurrentLine[0])) {
+			if (tripID == currentTripID) {
 				pathMatrix[pathMatrixFromStopID(previousStop)][pathMatrixFromStopID(
 						Integer.parseInt(splitCurrentLine[3]))] = 1;
 			}
 
 			previousStop = Integer.parseInt(splitCurrentLine[3]);
-			tripID = Integer.parseInt(splitCurrentLine[0]);
+			tripID = currentTripID;
 
 		}
 		System.out.println("All stop files added (3/3)");
