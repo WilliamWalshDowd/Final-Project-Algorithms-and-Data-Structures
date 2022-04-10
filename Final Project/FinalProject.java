@@ -15,8 +15,12 @@ public class FinalProject {
 			userInput = scanner.next();
 
 			while (!userInput.contains("1") && !userInput.contains("2") && !userInput.contains("3")) {
+				if (userInput.toLowerCase().equals("exit")) {
+					exit = true;
+					break;
+				}
 				System.out.println(
-						"You typed an input that wasn't recognised, please type 1 2 or 3 based on the above list.");
+						"You typed an input that wasn't recognised, please type 1 2 or 3 based on the above list. or exit to quit.");
 				System.out.print("> ");
 				userInput = scanner.next();
 			}

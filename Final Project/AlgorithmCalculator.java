@@ -24,7 +24,6 @@ public class AlgorithmCalculator {
 		int pathMatrixStopIDByIndex1 = pathMatrixFromStopID(stopID1);
 		int pathMatrixStopIDByIndex2 = pathMatrixFromStopID(stopID2);
 		
-		runAlgorithOnPathMatrix(pathMatrixStopIDByIndex1);
 		
 		float shortestPath;
 
@@ -33,6 +32,8 @@ public class AlgorithmCalculator {
 					"There was a problem finding the fastest route, the IDs given dont have an associated stop.");
 			return false;
 		}
+		
+		runAlgorithOnPathMatrix(pathMatrixStopIDByIndex1);
 
 		shortestPath = pathMatrix[pathMatrixStopIDByIndex1][pathMatrixStopIDByIndex2];
 
