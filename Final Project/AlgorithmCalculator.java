@@ -15,7 +15,6 @@ public class AlgorithmCalculator {
 		System.out.println("Loading files...");
 		loadFiles();
 		System.out.println("All files loaded!");
-		System.out.println("All algorithms complete!");
 	}
 
 // ---------------------------------------------------------------------------------//
@@ -49,7 +48,6 @@ public class AlgorithmCalculator {
 
 	public boolean searchForStopByName(String name) {
 		ArrayList<Stop> stopsMatchingSearch = new ArrayList<Stop>();
-		System.out.println(name);
 
 		// currently brute force version TODO make using ternary tree
 		for (int i = 0; i < stops.size(); i++) {
@@ -70,13 +68,31 @@ public class AlgorithmCalculator {
 		}
 
 	}
+	
+	private boolean timeEquals(String arrivalTime, String searchTime) {
+		String paddedArrivalTime = arrivalTime;
+		String paddedSearchTime = searchTime;
+		
+		if(paddedArrivalTime.charAt(0) ==  ' ' || paddedArrivalTime.charAt(0) ==  '0') {
+			paddedArrivalTime = paddedArrivalTime.substring(1);
+		}
+				
+		if(paddedSearchTime.charAt(0) == ' ' || paddedSearchTime.charAt(0) == '0' ) {
+			paddedSearchTime = paddedSearchTime.substring(1);
+		}
+
+		return paddedArrivalTime.equals(paddedSearchTime);
+	}
 
 	public boolean searchForTripByTime(String time) {
 		ArrayList<Trip> tripsMatchingSearch = new ArrayList<Trip>();
 
+		
+		System.out.println("Search trips " + trips.size() + " trips for " + time);
+		
 		for (int i = 0; i < trips.size(); i++) {
 			for (int j = 0; j < trips.get(i).nodes.size(); j++) {
-				if (trips.get(i).nodes.get(j).arrivalTime.equals(time)) {
+				if ( timeEquals(trips.get(i).nodes.get(j).arrivalTime, time) ) {
 					tripsMatchingSearch.add(trips.get(i));
 					break;
 				}
@@ -88,7 +104,7 @@ public class AlgorithmCalculator {
 			System.out.println("------------------------------------------------------------------");
 			System.out.println("-------------------Trip ID: " + trip.tripID + "-------------------");
 			for (int j = 0; j < trip.nodes.size(); j++) {
-				tripNode tripnode = trip.nodes.get(j);
+				TripNode tripnode = trip.nodes.get(j);
 				System.out.print("		step in trip = " + (j + 1));
 				tripnode.printInfo();
 			}
@@ -125,10 +141,14 @@ public class AlgorithmCalculator {
 			System.out.println("ERROR FILE NAMED transfers.txt NOT FOUND");
 		}
 		
+		int lines = 0;
 		int previousStop = -1;
 		int tripID = -1;
 
-		while (true) {
+		while (true) {	
+			lines ++;
+			if(lines % 100000 == 0) System.out.print(".");
+			
 			String currentLine;
 			try {
 				currentLine = buffer.readLine();
@@ -167,21 +187,30 @@ public class AlgorithmCalculator {
 
 			String[] splitArrivalTime = splitCurrentLine[1].split(":");
 			String[] splitDepartureTime = splitCurrentLine[2].split(":");
-			splitArrivalTime[0] = splitArrivalTime[0].substring(1);
-			splitDepartureTime[0] = splitDepartureTime[0].substring(1);
+			if (splitArrivalTime[0].charAt(0) == ' ') {
+				splitArrivalTime[0] = splitArrivalTime[0].substring(1);				
+			}
+			
+			if (splitDepartureTime[0].charAt(0) == ' ') {
+				splitDepartureTime[0] = splitDepartureTime[0].substring(1);
+			}
+						
 			if (Integer.parseInt(splitArrivalTime[0]) < 24 && Integer.parseInt(splitArrivalTime[0]) >= 0
 					&& Integer.parseInt(splitArrivalTime[1]) <= 59 && Integer.parseInt(splitArrivalTime[1]) >= 0
 					&& Integer.parseInt(splitArrivalTime[2]) <= 59 && Integer.parseInt(splitArrivalTime[2]) >= 0) {
 				if (Integer.parseInt(splitDepartureTime[0]) < 24 && Integer.parseInt(splitDepartureTime[0]) >= 0
 						&& Integer.parseInt(splitDepartureTime[1]) <= 59 && Integer.parseInt(splitDepartureTime[1]) >= 0
-						&& Integer.parseInt(splitDepartureTime[2]) <= 59
-						&& Integer.parseInt(splitDepartureTime[2]) >= 0) {
+						&& Integer.parseInt(splitDepartureTime[2]) <= 59 && Integer.parseInt(splitDepartureTime[2]) >= 0) {
 					trips.get(trips.size() - 1).nodes
-							.add(new tripNode(splitCurrentLine[1].substring(1), splitCurrentLine[2].substring(1),
+							.add(new TripNode(splitCurrentLine[1], splitCurrentLine[2],
 									Integer.parseInt(splitCurrentLine[3]), Integer.parseInt(splitCurrentLine[4]),
 									Integer.parseInt(splitCurrentLine[5]), Integer.parseInt(splitCurrentLine[6]),
 									Integer.parseInt(splitCurrentLine[7]), Float.parseFloat(splitCurrentLine[8])));
+				} else {
+					// System.out.println("Departure failed splitArrival " + splitArrivalTime[0] + "  splitDepartureTime " + splitDepartureTime[0]);
 				}
+			} else {
+				// System.out.println("Arrival failed splitArrival " + splitArrivalTime[0] + "  splitDepartureTime " + splitDepartureTime[0]);
 			}
 
 			// adds more data to the path matrix for finding the optimal path between stops
@@ -196,6 +225,9 @@ public class AlgorithmCalculator {
 			tripID = currentTripID;
 
 		}
+		
+		System.out.println("!");
+		System.out.println("Completed parsing " + lines + " rows, with " + trips.size() +  " valid trips found.");
 		System.out.println("All stop files added (3/3)");
 	}
 
