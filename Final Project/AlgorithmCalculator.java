@@ -73,18 +73,28 @@ public class AlgorithmCalculator {
 		String paddedArrivalTime = arrivalTime;
 		String paddedSearchTime = searchTime;
 		
-		if(paddedArrivalTime.charAt(0) ==  ' ' || paddedArrivalTime.charAt(0) ==  '0') {
-			paddedArrivalTime = paddedArrivalTime.substring(1);
-		}
-				
-		if(paddedSearchTime.charAt(0) == ' ' || paddedSearchTime.charAt(0) == '0' ) {
-			paddedSearchTime = paddedSearchTime.substring(1);
-		}
+//		if(paddedArrivalTime.charAt(0) ==  ' ' || paddedArrivalTime.charAt(0) ==  '0') {
+//			paddedArrivalTime = paddedArrivalTime.substring(1);
+//		}
+//				
+//		if(paddedSearchTime.charAt(0) == ' ' || paddedSearchTime.charAt(0) == '0' ) {
+//			paddedSearchTime = paddedSearchTime.substring(1);
+//		}
 
 		return paddedArrivalTime.equals(paddedSearchTime);
 	}
 
-	public boolean searchForTripByTime(String time) {
+	public boolean searchForTripByTime(String searchedTime) {
+		String time = searchedTime;
+		
+		
+		if(time.charAt(0) == '0') {
+			time = " " + time.substring(1);
+		}
+		if(time.charAt(1) == ':') {
+			time = " " + time;
+		}
+		
 		ArrayList<Trip> tripsMatchingSearch = new ArrayList<Trip>();
 
 		
