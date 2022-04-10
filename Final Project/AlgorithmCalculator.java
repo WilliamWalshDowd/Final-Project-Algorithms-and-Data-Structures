@@ -22,16 +22,20 @@ public class AlgorithmCalculator {
 // Functions that perform the 3 required tasks
 // ---------------------------------------------------------------------------------//
 	public boolean fastestRouteBetween(int stopID1, int stopID2) {
-		runAlgorithOnPathMatrix(stopID1);
+		int pathMatrixStopIDByIndex1 = pathMatrixFromStopID(stopID1);
+		int pathMatrixStopIDByIndex2 = pathMatrixFromStopID(stopID2);
+		
+		runAlgorithOnPathMatrix(pathMatrixStopIDByIndex1);
+		
 		float shortestPath;
 
-		if (pathMatrixFromStopID(stopID1) == -1 || pathMatrixFromStopID(stopID2) == -1) {
+		if (pathMatrixStopIDByIndex1 == -1 || pathMatrixStopIDByIndex2 == -1) {
 			System.out.println(
 					"There was a problem finding the fastest route, the IDs given dont have an associated stop.");
 			return false;
 		}
 
-		shortestPath = pathMatrix[pathMatrixFromStopID(stopID1)][pathMatrixFromStopID(stopID2)];
+		shortestPath = pathMatrix[pathMatrixStopIDByIndex1][pathMatrixStopIDByIndex2];
 
 		if (shortestPath >= 999999999) {
 			System.out
