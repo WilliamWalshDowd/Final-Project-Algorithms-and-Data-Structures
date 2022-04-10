@@ -15,34 +15,43 @@ public class AlgorithmCalculator {
 		System.out.println("Loading files...");
 		loadFiles();
 		System.out.println("All files loaded!");
-		runAlgorithOnPathMatrix();
+		System.out.println("All algorithms complete!");
 	}
 
 // ---------------------------------------------------------------------------------//
 // Functions that perform the 3 required tasks
 // ---------------------------------------------------------------------------------//
-	public void fastestRouteBetween(int stopID1, int stopID2) {
+	public boolean fastestRouteBetween(int stopID1, int stopID2) {
+		runAlgorithOnPathMatrix(stopID1, stopID2);
 		float shortestPath = pathMatrix[stopID1][stopID2];
 
-		System.out.println("Cost from stop" + stopID1 + " to " + stopID2 + "is" + shortestPath);
+		if (shortestPath >= 999999999) {
+			System.out.println(
+					"There was a problem finding the fastest route, either the stop IDs dont exist or there isn't a route between the 2 stops");
+			return false;
+		} else {
+			System.out.println("Cost from stop " + stopID1 + " to " + stopID2 + " is " + shortestPath);
+			return true;
+		}
 	}
 
 	public boolean searchForStopByName(String name) {
-		ArrayList<Stop> tripsMatchingSearch = new ArrayList<Stop>();
+		ArrayList<Stop> stopsMatchingSearch = new ArrayList<Stop>();
+		System.out.println(name);
 
 		// currently brute force version TODO make using ternary tree
 		for (int i = 0; i < stops.size(); i++) {
 			if (stops.get(i).stop_name.contains(name)) {
-				tripsMatchingSearch.add(stops.get(i));
+				stopsMatchingSearch.add(stops.get(i));
 			}
 		}
 
-		for (int i = 0; i < tripsMatchingSearch.size(); i++) {
-			Stop stop = tripsMatchingSearch.get(i);
+		for (int i = 0; i < stopsMatchingSearch.size(); i++) {
+			Stop stop = stopsMatchingSearch.get(i);
 			stop.printInfo();
 		}
 
-		if (tripsMatchingSearch.size() > 0) {
+		if (stopsMatchingSearch.size() > 0) {
 			return true;
 		} else {
 			return false;
@@ -55,7 +64,7 @@ public class AlgorithmCalculator {
 
 		for (int i = 0; i < trips.size(); i++) {
 			for (int j = 0; j < trips.get(i).nodes.size(); j++) {
-				if (trips.get(i).nodes.get(j).arrivalTime == time) {
+				if (trips.get(i).nodes.get(j).arrivalTime.equals(time)) {
 					tripsMatchingSearch.add(trips.get(i));
 					break;
 				}
@@ -64,11 +73,12 @@ public class AlgorithmCalculator {
 		System.out.println("-------- Trips matching the given time --------");
 		for (int i = 0; i < tripsMatchingSearch.size(); i++) {
 			Trip trip = tripsMatchingSearch.get(i);
-			System.out.println("Trip ID: " + trip.tripID);
+			System.out.println("------------------------------------------------------------------");
+			System.out.println("-------------------Trip ID: " + trip.tripID + "-------------------");
 			for (int j = 0; j < trip.nodes.size(); j++) {
 				tripNode tripnode = trip.nodes.get(j);
-				System.out.println(j + 1 + " Step in trip, " + "Arrival Time: " + tripnode.arrivalTime
-						+ ", Departure Time: " + tripnode.departureTime);
+				System.out.print("		step in trip = " + (j+1));
+				tripnode.printInfo();
 			}
 		}
 
@@ -150,10 +160,11 @@ public class AlgorithmCalculator {
 						&& Integer.parseInt(splitDepartureTime[1]) <= 59 && Integer.parseInt(splitDepartureTime[1]) >= 0
 						&& Integer.parseInt(splitDepartureTime[2]) <= 59
 						&& Integer.parseInt(splitDepartureTime[2]) >= 0) {
-					trips.get(trips.size() - 1).nodes.add(new tripNode(splitCurrentLine[1], splitCurrentLine[2],
-							Integer.parseInt(splitCurrentLine[3]), Integer.parseInt(splitCurrentLine[4]),
-							Integer.parseInt(splitCurrentLine[5]), Integer.parseInt(splitCurrentLine[6]),
-							Integer.parseInt(splitCurrentLine[7]), Float.parseFloat(splitCurrentLine[8])));
+					trips.get(trips.size() - 1).nodes
+							.add(new tripNode(splitCurrentLine[1].substring(1), splitCurrentLine[2].substring(1),
+									Integer.parseInt(splitCurrentLine[3]), Integer.parseInt(splitCurrentLine[4]),
+									Integer.parseInt(splitCurrentLine[5]), Integer.parseInt(splitCurrentLine[6]),
+									Integer.parseInt(splitCurrentLine[7]), Float.parseFloat(splitCurrentLine[8])));
 				}
 			}
 
@@ -268,14 +279,12 @@ public class AlgorithmCalculator {
 	// runs an algorithm to find the fastest routes for every possible path and then
 	// updates the path matrix with that info.
 	// ----------------------------------------------------------------------------------------------------------------------------//
-	private static void runAlgorithOnPathMatrix() {
-		for (int i = 0; i < stops.size(); i++) {
-			for (int j = 0; j < stops.size(); j++) {
-				for (int k = 0; k < stops.size(); k++) {
-					if (pathMatrix[i][k] + pathMatrix[k][j] < pathMatrix[i][j]) {
-						pathMatrix[i][j] = pathMatrix[i][k] + pathMatrix[k][j];
-					}
-				}
+	private static void runAlgorithOnPathMatrix(int nodeID1, int nodeID2) {
+		int i = nodeID1;
+		int j = nodeID2;
+		for (int k = 0; k < stops.size(); k++) {
+			if (pathMatrix[i][k] + pathMatrix[k][j] < pathMatrix[i][j]) {
+				pathMatrix[i][j] = pathMatrix[i][k] + pathMatrix[k][j];
 			}
 		}
 	}
@@ -285,7 +294,11 @@ public class AlgorithmCalculator {
 
 		for (int i = 0; i < stops.size(); i++) {
 			for (int j = 0; j < stops.size(); j++) {
-				pathMatrix[i][j] = 999999999;
+				if (i == j) {
+					pathMatrix[i][j] = 0;
+				} else {
+					pathMatrix[i][j] = 999999999;
+				}
 			}
 		}
 	}
